@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>World Time</title>
+    <link rel="shortcut icon" href="./favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        #location-list {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg">
+        <video class="video" autoplay loop muted>
+            <source src="./world.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="card">
+            <div class="content">
+                <h1>World Time</h1>
+                <label for="search">Search for a location:</label>
+                <input type="text" id="search">
+                <div id="location-list"></div>
+                <div id="time"></div>
+
+                <script>
+                    fetch('list.json')
+                        .then(response => response.json())
+                        .then(data => {
+                            const locationList = document.getElementById('location-list');
+                            const searchInput = document.getElementById('search');
+                            const timeDiv = document.getElementById('time');
+
+                            function updateLocationList() {
+                                locationList.innerHTML = '';
+                                const searchTerm = searchInput.value.trim().toLowerCase();
+
+                                data.forEach(timezone => {
+                                    if (timezone.toLowerCase().includes(searchTerm)) {
+                                        const timezoneLink = document.createElement('a');
+                                        timezoneLink.href = '#'; // Add a dummy href
+                                        timezoneLink.textContent = timezone;
+                                        timezoneLink.addEventListener('click', (event) => {
+                                            event.preventDefault(); // Prevent the link from navigating
+                                            getTimeForTimezone(timezone);
+                                        });
+                                        locationList.appendChild(timezoneLink);
+                                    }
+                                });
+
+                                if (searchTerm) {
+                                    locationList.style.display = 'block';
+                                } else {
+                                    locationList.style.display = 'none';
+                                }
+                            }
+
+                            function getTimeForTimezone(timezone) {
+                                fetch(`http://40.82.155.8/world-time/get_time.php?timeZone=${timezone}`)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        timeDiv.textContent = `Current time in ${timezone}: ${data.time}`;
+                                    })
+                                    .catch(error => console.error(error));
+                            }
+
+                            searchInput.addEventListener('input', updateLocationList);
+                            updateLocationList();
+                        })
+                        .catch(error => console.error(error));
+                </script>               
+            </div>            
+        </div>
+    </div>
+
+</body>
+</html>

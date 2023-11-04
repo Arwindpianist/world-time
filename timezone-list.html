@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>World Time</title>
+</head>
+<body>
+    <h1>World Time</h1>
+    <div id="timezone-list"></div>
+
+    <script>
+        fetch('list.json')
+            .then(response => response.json())
+            .then(data => {
+                const timezoneList = document.getElementById('timezone-list');
+                const ul = document.createElement('ul');
+
+                data.forEach(timezone => {
+                    const li = document.createElement('li');
+                    li.textContent = timezone;
+                    ul.appendChild(li);
+                });
+
+                timezoneList.appendChild(ul);
+            })
+            .catch(error => console.error(error));
+    </script>
+</body>
+</html>
